@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:lineSpacingExtra="8sp"
+        android:text="Dialog Title"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+    <!--android:textColor="#8A646464"-->
+
+    <EditText
+        android:id="@+id/dialog_name_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="@string/hint_name"
+        android:inputType="textCapSentences|textMultiLine"
+        android:lines="1"
+        android:textColorHint="#89C3C3C3"
+        android:textSize="20sp"
+        android:autofillHints=""/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/divider"
+        android:contentDescription="@string/divider" />
+
+    <EditText
+        android:id="@+id/dialog_price_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="@string/hint_amount"
+        android:inputType="textCapSentences|textMultiLine|number"
+        android:textColorHint="#89C3C3C3"
+        android:textSize="20sp"
+        android:autofillHints=""/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/divider"
+        android:contentDescription="@string/divider"/>
+
+    <EditText
+        android:id="@+id/dialog_details_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="@string/hint_details"
+        android:inputType="textCapSentences|textMultiLine"
+        android:lines="2"
+        android:textColorHint="#89C3C3C3"
+        android:textSize="20sp"
+        android:autofillHints=""/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/divider"
+        android:contentDescription="@string/divider" />
+</LinearLayout>

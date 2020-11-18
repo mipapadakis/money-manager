@@ -5,4 +5,11 @@
     <string name="tab_text_3">+€</string>
     <string name="add_fab">Add FAB</string>
     <string name="divider">Divider</string>
+    <string name="hint_name">Insert name</string>
+    <string name="hint_amount">Amount of money (€)</string>
+    <string name="hint_details">Details (optional)</string>
+    <string name="fragment_one_new_payment">What did you buy?</string>
+    <string name="fragment_two_new_payment">Who do you owe to?</string>
+    <string name="fragment_three_new_payment">Who owes you?</string>
+    <string name="update_payment">Update info:</string>
 </resources>

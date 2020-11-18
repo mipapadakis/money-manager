@@ -1,6 +1,5 @@
-package com.example.moneymanager;
+package com.example.moneymanager.database.model;
 
-import android.content.Context;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.moneymanager.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,11 +19,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHolder> {
-    //private Context context;
     private final List<Payment> paymentsList;
 
-    public PaymentAdapter(/*Context context,*/ List<Payment> paymentsList) {
-        //this.context = context;
+    public PaymentAdapter(List<Payment> paymentsList) {
         this.paymentsList = paymentsList;
     }
 
@@ -36,7 +35,13 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHold
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         Payment payment = paymentsList.get(position);
-        holder.payment.setText(payment.getProduct());
+        holder.price.setText(payment.getPrice());
+        holder.name.setText(payment.getName());
+        if(payment.getDetails().equals("")) holder.details.setVisibility(View.GONE);
+        else{
+            holder.details.setText(payment.getDetails());
+            holder.details.setVisibility(View.VISIBLE);
+        }
         holder.dot.setText(Html.fromHtml("&#8226;")); // Displaying dot from HTML character code
         holder.timestamp.setText(getFormattedDate(payment.getTimestamp())); // Formatting and displaying timestamp
     }
@@ -48,22 +53,27 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHold
         try {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date date = fmt.parse(dateStr);
-            SimpleDateFormat fmtOut = new SimpleDateFormat("MMM d", Locale.getDefault());
+            SimpleDateFormat fmtOut = new SimpleDateFormat("MMM d,  HH:mm", Locale.getDefault());
+            if(date==null){ return ""; }
             return fmtOut.format(date);
         } catch (ParseException e) { Log.d("Error @PaymentAdapter", e.getMessage()); }
-        return dateStr; ////////////////////////""//////////////////////////////////////////////////
+        return "";
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
         public TextView dot;
-        public TextView payment;
         public TextView timestamp;
+        public TextView name;
+        public TextView price;
+        public TextView details;
 
         public viewHolder(View view) {
             super(view);
             dot = view.findViewById(R.id.dot);
-            payment = view.findViewById(R.id.product);
             timestamp = view.findViewById(R.id.timestamp);
+            name = view.findViewById(R.id.name_text_view);
+            price = view.findViewById(R.id.price);
+            details = view.findViewById(R.id.details_text_view);
         }
     }
 }
