@@ -35,7 +35,8 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHold
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         Payment payment = paymentsList.get(position);
-        holder.price.setText(payment.getPrice());
+        String price = payment.getPrice() + "€";
+        holder.price.setText(price);
         holder.name.setText(payment.getName());
         if(payment.getDetails().equals("")) holder.details.setVisibility(View.GONE);
         else{
@@ -51,11 +52,11 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHold
 
     private String getFormattedDate(String dateStr) {
         try {
-            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat fmt = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a", Locale.getDefault());
             Date date = fmt.parse(dateStr);
-            SimpleDateFormat fmtOut = new SimpleDateFormat("MMM d,  HH:mm", Locale.getDefault());
+            fmt.applyPattern("MMM d,  h:mm a");
             if(date==null){ return ""; }
-            return fmtOut.format(date);
+            return fmt.format(date);
         } catch (ParseException e) { Log.d("Error @PaymentAdapter", e.getMessage()); }
         return "";
     }

@@ -1,4 +1,4 @@
-package com.example.moneymanager.database.model;
+package com.example.moneymanager.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.moneymanager.database.model.Payment;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -53,6 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Payment.COLUMN_PRICE, price);
         values.put(Payment.COLUMN_DETAILS, details);
         values.put(Payment.COLUMN_TYPE, type);
+        values.put(Payment.COLUMN_TIMESTAMP, DateFormat.getDateTimeInstance().format(new Date()));
 
         // insert row
         long id = db.insert(Payment.TABLE_NAME, null, values); //TODO

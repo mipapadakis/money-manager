@@ -22,4 +22,5 @@
     <style name="Theme.MoneyManager.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MoneyManager.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

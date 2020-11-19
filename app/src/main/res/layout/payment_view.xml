@@ -12,88 +12,103 @@
     android:paddingTop="5dp"
     android:focusable="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/dot"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:includeFontPadding="false"
             android:textColor="@color/dot"
             android:lineSpacingExtra="0dp"
+            android:text="@string/dot"
             android:textSize="40sp"
-            android:layout_marginEnd="10dp"
+            android:paddingHorizontal="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <TextView
+            android:id="@+id/timestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/timestamp"
+            android:textSize="14sp"
+            android:text="@string/example_date"
+            android:alpha="1"
+            android:gravity="center"
+            android:paddingBottom="2dp"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintLeft_toRightOf="@id/dot">
+            android:focusable="true"
+            android:clickable="true"
+            app:layout_constrainedWidth="true"
+            android:focusableInTouchMode="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/dot"
+            app:layout_constraintStart_toEndOf="@id/dot"
+            app:layout_constraintEnd_toStartOf="@id/price"
+            app:layout_constraintRight_toLeftOf="@id/price"
+            app:layout_constraintTop_toBottomOf="@id/timestamp"
+            app:layout_constraintHorizontal_bias="0">
 
             <TextView
-                android:id="@+id/timestamp"
+                android:id="@+id/name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/timestamp"
-                android:textSize="14sp"
-                android:text="NOV 18,  3:23"
-                android:alpha="1"
-                android:gravity="center"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/name_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="20sp"
-                    android:text = "Name"
-                    android:maxLines="1"
-                    android:gravity="start"/>
-
-                <TextView
-                    android:id="@+id/price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:paddingEnd="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingStart="5dp"
-                    android:paddingLeft="5dp"
-                    android:text="333€"
-                    android:gravity="end"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/details_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/timestamp"
-                android:textSize="16sp"
-                android:text = "Deetailes"
-                android:gravity="start"
-                android:layout_gravity="start"/>
+                android:text="@string/example_name"
+                android:paddingHorizontal="5dp"
+                android:textColor="@color/text"
+                app:layout_constrainedWidth="true"
+                android:textSize="18sp"
+                android:importantForAutofill="no"
+                android:gravity="start"/>
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="@string/example_price"
+            android:textColor="@color/divider"
+            android:textSize="18sp"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/timestamp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="visible"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/details_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/timestamp"
+        android:textSize="14sp"
+        android:text = "@string/example_details"
+        android:textStyle="italic"
+        android:gravity="start"
+        android:importantForAutofill="no"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="@color/text"
         android:alpha="0.4"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="4dp"
         android:contentDescription="@string/divider"/>
 </LinearLayout>

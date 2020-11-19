@@ -1,4 +1,4 @@
-package com.example.moneymanager.ui.main;
+package com.example.moneymanager.ui;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;

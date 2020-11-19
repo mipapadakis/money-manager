@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
@@ -27,8 +27,10 @@
         android:background="@android:color/transparent"
         android:gravity="top"
         android:hint="@string/hint_name"
-        android:inputType="textCapSentences|textMultiLine"
-        android:lines="1"
+        android:inputType="textCapSentences|text"
+        android:maxLines="1"
+        android:imeOptions="actionNext"
+        android:nextFocusForward="@+id/dialog_price_edit_text"
         android:textColorHint="#89C3C3C3"
         android:textSize="20sp"
         android:autofillHints=""/>
@@ -40,17 +42,58 @@
         android:background="@color/divider"
         android:contentDescription="@string/divider" />
 
-    <EditText
-        android:id="@+id/dialog_price_edit_text"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:gravity="top"
-        android:hint="@string/hint_amount"
-        android:inputType="textCapSentences|textMultiLine|number"
-        android:textColorHint="#89C3C3C3"
-        android:textSize="20sp"
-        android:autofillHints=""/>
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/currency_text_view"
+            app:layout_constraintRight_toLeftOf="@id/currency_text_view"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0">
+
+            <EditText
+                android:id="@+id/dialog_price_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="top"
+                android:hint="@string/hint_amount"
+                android:inputType="textMultiLine|number"
+                android:textColorHint="#89C3C3C3"
+                android:imeOptions="actionNext"
+                android:nextFocusForward="@+id/dialog_details_edit_text"
+                android:textSize="20sp"
+                android:autofillHints=""
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/currency_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="22sp"
+            android:text="@string/euro"
+            android:textColor="#89C3C3C3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <ImageView
         android:layout_width="match_parent"
@@ -65,9 +108,10 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:gravity="top"
+        android:maxLines="2"
+        android:imeOptions="actionDone"
         android:hint="@string/hint_details"
-        android:inputType="textCapSentences|textMultiLine"
-        android:lines="2"
+        android:inputType="textCapSentences|text"
         android:textColorHint="#89C3C3C3"
         android:textSize="20sp"
         android:autofillHints=""/>

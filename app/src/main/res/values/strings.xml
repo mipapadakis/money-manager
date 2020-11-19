@@ -6,10 +6,28 @@
     <string name="add_fab">Add FAB</string>
     <string name="divider">Divider</string>
     <string name="hint_name">Insert name</string>
-    <string name="hint_amount">Amount of money (€)</string>
+    <string name="hint_amount">Amount of money</string>
     <string name="hint_details">Details (optional)</string>
     <string name="fragment_one_new_payment">What did you buy?</string>
     <string name="fragment_two_new_payment">Who do you owe to?</string>
     <string name="fragment_three_new_payment">Who owes you?</string>
     <string name="update_payment">Update info:</string>
+    <string name="euro">€</string>
+
+    <string name="fragment_one_description">Record here all your payments to keep track of your expenses.
+        \nThis month, you\'ve spent <b>%,.2f€</b></string>
+
+    <string name="fragment_two_description">Record here all the people you owe money to.
+        \nIn total, you owe <b>%,.2f€</b></string>
+
+    <string name="fragment_three_description">Record here all the people that owe money to you.
+        \nIn total, they owe you <b>%,.2f€</b></string>
+
+    <!-- placeholder texts -->
+    <string name="dot">•</string>
+    <string name="example_date">NOV 18, 3:23 AM</string>
+    <string name="example_name">Name</string>
+    <string name="example_price">11.1€</string>
+    <string name="example_details">Details</string>
+    <string name="fragment_description">Fragment Description</string>
 </resources>

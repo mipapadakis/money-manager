@@ -16,32 +16,41 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.moneymanager.database.model.DatabaseHelper;
+import com.example.moneymanager.database.DatabaseHelper;
 import com.example.moneymanager.database.model.Payment;
 import com.example.moneymanager.database.model.PaymentAdapter;
 import com.example.moneymanager.R;
-import com.example.moneymanager.ui.main.RecyclerTouchListener;
+import com.example.moneymanager.ui.RecyclerTouchListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class FragmentOne extends Fragment {
-    private static final String type = DatabaseHelper.TYPE_ONE;
+    private static final String type = DatabaseHelper.TYPE_ONE; //TODO •
     private final List<Payment> paymentsList = new ArrayList<>();
+    private TextView fragmentDescriptionTV;
+    private String fragmentDescriptionString;
     private PaymentAdapter adapter;
     private final Context context;
     private DatabaseHelper db;
 
     public FragmentOne(Context mContext) {
         context = mContext;
-    }
+    } //TODO •
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
+        fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
+        fragmentDescriptionString = getResources().getText(R.string.fragment_one_description).toString(); // TODO •
 
         db = new DatabaseHelper(context);
         if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments(type));
+        updateFragmentDescription();
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         adapter = new PaymentAdapter(paymentsList);
@@ -64,8 +73,21 @@ public class FragmentOne extends Fragment {
         return view;
     }
 
+    private void updateFragmentDescription(){ //TODO •
+        double total = 0;
+        for(int i=0; i<paymentsList.size(); i++){
+            try {
+                SimpleDateFormat fmt = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a", Locale.getDefault());
+                Date date = fmt.parse(paymentsList.get(i).getTimestamp());
+                fmt.applyPattern("yyyyMM");
+                if(date!=null && fmt.format(date).equals(fmt.format(new Date()))) { //Checks if timestamp is in the last month
+                    total += Double.parseDouble(paymentsList.get(i).getPrice());
+                }
 
-
+            } catch (ParseException e) { e.printStackTrace(); }
+        }
+        fragmentDescriptionTV.setText(String.format(fragmentDescriptionString,total));
+    }
 
 
     /**
@@ -73,19 +95,20 @@ public class FragmentOne extends Fragment {
      * and refreshing the list
      */
     private void createPayment(String name, String price, String details) {
-        // inserting note in db and getting
-        // newly inserted note id
+        // inserting payment in db and getting
+        // newly inserted payment id
         long id = db.insertPayment(name, price, details, type);
 
-        // get the newly inserted note from db
+        // get the newly inserted payment from db
         Payment p = db.getPayment(id);
 
         if (p != null) {
-            // adding new note to array list at 0 position
-            paymentsList.add(0, p);
+            // adding new payment to array list at 0 position
+            paymentsList.add(p);
 
             // refreshing the list
             adapter.notifyDataSetChanged();
+            updateFragmentDescription();
         }
     }
 
@@ -95,17 +118,18 @@ public class FragmentOne extends Fragment {
      */
     private void updatePayment(String name, String price, String details, int position) {
         Payment p = paymentsList.get(position);
-        // updating note text
+        // updating payment text
         p.setName(name);
         p.setPrice(price);
         p.setDetails(details);
 
-        // updating note in db
+        // updating payment in db
         db.updatePayment(p);
 
         // refreshing the list
         paymentsList.set(position, p);
         adapter.notifyItemChanged(position);
+        updateFragmentDescription();
     }
 
     /**
@@ -113,12 +137,13 @@ public class FragmentOne extends Fragment {
      * item from the list by its position
      */
     private void deletePayment(int position) {
-        // deleting the note from db
+        // deleting the payment from db
         db.deletePayment(paymentsList.get(position));
 
-        // removing the note from the list
+        // removing the payment from the list
         paymentsList.remove(position);
         adapter.notifyItemRemoved(position);
+        updateFragmentDescription();
     }
 
     /**
@@ -156,7 +181,7 @@ public class FragmentOne extends Fragment {
         final EditText inputPrice = view.findViewById(R.id.dialog_price_edit_text);
         final EditText inputDetails = view.findViewById(R.id.dialog_details_edit_text);
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_one_new_payment) : getString(R.string.update_payment));
+        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_one_new_payment) : getString(R.string.update_payment)); //TODO •
 
         if (shouldUpdate && payment != null) {
             inputName.setText(payment.getName());
@@ -164,7 +189,7 @@ public class FragmentOne extends Fragment {
             inputDetails.setText(payment.getDetails());
         }
         alertDialogBuilderUserInput
-                .setCancelable(false)
+                .setCancelable(true)
                 .setPositiveButton(shouldUpdate ? "update" : "save", (dialogBox, id) -> {})
                 .setNegativeButton("cancel",
                         (dialogBox, id) -> dialogBox.cancel());
@@ -173,20 +198,31 @@ public class FragmentOne extends Fragment {
         alertDialog.show();
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            // Show toast message when no text is entered
+            // Show toast message when no name or price is entered
+            if(TextUtils.isEmpty(inputName.getText().toString()) && TextUtils.isEmpty(inputPrice.getText().toString())){
+                Toast.makeText(context, "Please enter a product name and price!", Toast.LENGTH_SHORT).show(); //TODO •
+                inputName.requestFocus();
+                return;
+            }
+            if(TextUtils.isEmpty(inputPrice.getText().toString())){
+                Toast.makeText(context, "Please enter a price!", Toast.LENGTH_SHORT).show();
+                inputPrice.requestFocus();
+                return;
+            }
             if (TextUtils.isEmpty(inputName.getText().toString())) {
-                Toast.makeText(context, "Please enter the product name!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Please enter a product name!", Toast.LENGTH_SHORT).show(); //TODO •
+                inputName.requestFocus();
                 return;
             } else {
                 alertDialog.dismiss();
             }
 
-            // check if user updating note
+            // check if user updating payment
             if (shouldUpdate && payment != null) {
-                // update note by it's id
+                // update payment by it's id
                 updatePayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString(), position);
             } else {
-                // create new note
+                // create new payment
                 createPayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString());
             }
         });

@@ -1,4 +1,4 @@
-package com.example.moneymanager.ui.main;
+package com.example.moneymanager.ui;
 
 import android.content.Context;
 import android.util.Log;
@@ -51,7 +51,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         }
         fragmentThree = new FragmentThree(mContext);
         return fragmentThree;
-
     }
 
     @Nullable
