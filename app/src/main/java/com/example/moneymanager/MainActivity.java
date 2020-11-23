@@ -12,12 +12,15 @@ import com.example.moneymanager.ui.SectionsPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private int tabSelector = 0;
+    private FloatingActionButton addFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+
+        addFab = findViewById(R.id.fab);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), addFab);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        findViewById(R.id.fab).setOnClickListener(v -> {
+        addFab.setOnClickListener(v -> {
             if(tabSelector == 0){
                 sectionsPagerAdapter.getFragmentOne().setFabClickListener();
             }else if(tabSelector == 1){

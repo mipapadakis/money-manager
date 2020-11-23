@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,21 +22,28 @@ import com.example.moneymanager.database.model.Payment;
 import com.example.moneymanager.database.model.PaymentAdapter;
 import com.example.moneymanager.R;
 import com.example.moneymanager.ui.RecyclerTouchListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentThree extends Fragment {
+    private static final float LOW_ALPHA = 0.06F;
+    private static final float FULL_ALPHA = 1.0F;
     private static final String type = DatabaseHelper.TYPE_THREE; //TODO •
     private final List<Payment> paymentsList = new ArrayList<>();
+    private final FloatingActionButton addFab;
     private TextView fragmentDescriptionTV;
     private String fragmentDescriptionString;
     private PaymentAdapter adapter;
     private final Context context;
     private DatabaseHelper db;
 
-    public FragmentThree(Context mContext) {
+    public FragmentThree(Context mContext, FloatingActionButton addFab) {
         context = mContext;
+        this.addFab = addFab;
     } //TODO •
 
     @Nullable
@@ -65,6 +73,20 @@ public class FragmentThree extends Fragment {
                 showActionsDialog(position);
             }
         }));
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    addFab.animate().alpha(LOW_ALPHA);
+                    addFab.setAlpha(LOW_ALPHA);
+                } else { // if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING)
+                    addFab.animate().alpha(FULL_ALPHA);
+                }
+            }
+        });
+        setFabClickListener();
 
         return view;
     }
@@ -184,6 +206,7 @@ public class FragmentThree extends Fragment {
 
         final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
         alertDialog.show();
+        alertDialog.setCanceledOnTouchOutside(false);
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             // Show toast message when no name or price is entered
@@ -217,6 +240,8 @@ public class FragmentThree extends Fragment {
     }
 
     public void setFabClickListener(){
-        showPaymentDialog(false, null, -1);
+        addFab.setOnClickListener(v -> {
+            showPaymentDialog(false, null, -1);
+        });
     }
 }

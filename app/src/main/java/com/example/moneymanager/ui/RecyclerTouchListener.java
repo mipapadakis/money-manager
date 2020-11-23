@@ -1,10 +1,14 @@
 package com.example.moneymanager.ui;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
 
