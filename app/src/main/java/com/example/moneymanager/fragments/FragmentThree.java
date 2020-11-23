@@ -240,8 +240,6 @@ public class FragmentThree extends Fragment {
     }
 
     public void setFabClickListener(){
-        addFab.setOnClickListener(v -> {
-            showPaymentDialog(false, null, -1);
-        });
+        showPaymentDialog(false, null, -1);
     }
 }
