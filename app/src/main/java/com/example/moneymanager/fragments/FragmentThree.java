@@ -86,7 +86,6 @@ public class FragmentThree extends Fragment {
                 }
             }
         });
-        setFabClickListener();
 
         return view;
     }
