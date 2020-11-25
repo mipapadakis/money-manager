@@ -39,7 +39,7 @@ import java.util.Objects;
 public class FragmentOne extends Fragment {
     private static final float LOW_ALPHA = 0.06F;
     private static final float FULL_ALPHA = 1.0F;
-    private static final String type = DatabaseHelper.TYPE_ONE; //TODO •
+    private static final int type = DatabaseHelper.TYPE_ONE; //TODO •
     private final List<Payment> paymentsList = new ArrayList<>();
     private final FloatingActionButton addFab;
     private TextView fragmentDescriptionTV;
@@ -59,8 +59,9 @@ public class FragmentOne extends Fragment {
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
         fragmentDescriptionString = getResources().getText(R.string.fragment_one_description).toString(); // TODO •
 
-        db = new DatabaseHelper(context);
-        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments(type));
+        db = new DatabaseHelper(context, type);
+        db.getWritableDatabase().close(); //Call onCreate in case the db is being created for the first time
+        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments());
         updateFragmentDescription();
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
@@ -122,16 +123,15 @@ public class FragmentOne extends Fragment {
      * and refreshing the list
      */
     private void createPayment(String name, String price, String details) {
-        // inserting payment in db and getting
-        // newly inserted payment id
-        long id = db.insertPayment(name, price, details, type);
+        // inserting payment in db and getting newly inserted payment id
+        long id = db.insertPayment(name, price, details);
 
         // get the newly inserted payment from db
         Payment p = db.getPayment(id);
 
         if (p != null) {
             // adding new payment to array list at 0 position
-            paymentsList.add(p);
+            paymentsList.add(0, p);
 
             // refreshing the list
             adapter.notifyDataSetChanged();

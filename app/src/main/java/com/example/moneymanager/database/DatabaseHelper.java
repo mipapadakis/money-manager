@@ -15,9 +15,11 @@ import java.util.Date;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String TYPE_ONE = "1";
-    public static final String TYPE_TWO = "2";
-    public static final String TYPE_THREE = "3";
+    public static final int TYPE_ONE = 1;
+    public static final int TYPE_TWO = 2;
+    public static final int TYPE_THREE = 3;
+    private int type = TYPE_ONE;
+    private String tableName;
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -25,43 +27,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "money_manager_db";
 
-
-    public DatabaseHelper(Context context) {
+    public DatabaseHelper(Context context, int type) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.type = type;
+        if(type == TYPE_ONE) tableName = Payment.TABLE_ONE_NAME;
+        else if(type == TYPE_TWO) tableName = Payment.TABLE_TWO_NAME;
+        else tableName = Payment.TABLE_THREE_NAME;
     }
 
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-
-        // create payments table
-        db.execSQL(Payment.CREATE_TABLE);
+        // create table
+        if(type == TYPE_ONE) db.execSQL(Payment.CREATE_TABLE_ONE);
+        else if(type == TYPE_TWO) db.execSQL(Payment.CREATE_TABLE_TWO);
+        else db.execSQL(Payment.CREATE_TABLE_THREE);
     }
 
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + Payment.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + tableName);
 
         // Create tables again
         onCreate(db);
     }
 
-    public long insertPayment(String name, String price, String details, String type) {
+    public long insertPayment(String name, String price, String details) {
         // get writable database as we want to write data
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        // `id` and `timestamp` will be inserted automatically.
+        // `id` will be inserted automatically.
         values.put(Payment.COLUMN_NAME, name);
         values.put(Payment.COLUMN_PRICE, price);
         values.put(Payment.COLUMN_DETAILS, details);
-        values.put(Payment.COLUMN_TYPE, type);
         values.put(Payment.COLUMN_TIMESTAMP, DateFormat.getDateTimeInstance().format(new Date()));
 
         // insert row
-        long id = db.insert(Payment.TABLE_NAME, null, values); //TODO
+        long id = db.insert(tableName, null, values);//TODO
 
         // close db connection
         db.close();
@@ -74,8 +80,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // get readable database as we are not inserting anything
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(Payment.TABLE_NAME,
-                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
+        Cursor cursor = db.query(tableName,
+                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TIMESTAMP},
                 Payment.COLUMN_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
 
         if (cursor != null)
@@ -87,7 +93,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.getString(cursor.getColumnIndex(Payment.COLUMN_NAME)),
                 cursor.getString(cursor.getColumnIndex(Payment.COLUMN_PRICE)),
                 cursor.getString(cursor.getColumnIndex(Payment.COLUMN_DETAILS)),
-                cursor.getString(cursor.getColumnIndex(Payment.COLUMN_TYPE)),
                 cursor.getString(cursor.getColumnIndex(Payment.COLUMN_TIMESTAMP)));
 
         // close the db connection
@@ -96,18 +101,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return payment;
     }
 
-    public List<Payment> getAllPayments(String type) {
+    public List<Payment> getAllPayments() {
         List<Payment> payments = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+
+//        Cursor cursor = db.query(tableName,
+//                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
+//                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
 
         // Select All Query
-        //String selectQuery = "SELECT  * FROM " + Payment.TABLE_NAME + " ORDER BY " + Payment.COLUMN_TIMESTAMP + " DESC";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        //Cursor cursor = db.rawQuery(selectQuery, null);
-
-        Cursor cursor = db.query(Payment.TABLE_NAME,
-                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
-                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
+        String selectQuery = "SELECT  * FROM " + tableName + " ORDER BY " + Payment.COLUMN_TIMESTAMP + " ASC";
+        Cursor cursor = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
         if (cursor!=null && cursor.moveToFirst()) {
@@ -117,7 +121,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 payment.setName(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_NAME)));
                 payment.setPrice(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_PRICE)));
                 payment.setDetails(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_DETAILS)));
-                payment.setType(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_TYPE)));
                 payment.setTimestamp(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_TIMESTAMP)));
 
                 payments.add(payment);
@@ -125,22 +128,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }
 
-
         // close the db connection
         db.close();
 
         return payments;
     }
 
-    public int getPaymentsCount(String type) {
-        //String countQuery = "SELECT  * FROM " + Payment.TABLE_NAME;
+    public int getPaymentsCount() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(Payment.TABLE_NAME,
-                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
-                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
+//        Cursor cursor = db.query(tableName,
+//                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
+//                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
 
-        int count = cursor.getCount(); //TODO
+        Cursor cursor = db.rawQuery("SELECT  * FROM " + tableName, null);
+        int count = cursor.getCount();
         cursor.close();
 
         // return count
@@ -154,17 +156,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Payment.COLUMN_NAME, payment.getName());
         values.put(Payment.COLUMN_PRICE, payment.getPrice());
         values.put(Payment.COLUMN_DETAILS, payment.getDetails());
-        values.put(Payment.COLUMN_TYPE, payment.getType());
 
         // updating row
-        db.update(Payment.TABLE_NAME, values, Payment.COLUMN_ID + " = ?",
+        db.update(tableName, values, Payment.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(payment.getId())});
         db.close();
     }
 
     public void deletePayment(Payment payment) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(Payment.TABLE_NAME, Payment.COLUMN_ID + " = ?",
+        db.delete(tableName, Payment.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(payment.getId())});
         db.close();
     }
