@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final int TYPE_ONE = 1;
     public static final int TYPE_TWO = 2;
     public static final int TYPE_THREE = 3;
-    private int type = TYPE_ONE;
+    private int type;
     private String tableName;
 
     // Database Version
@@ -168,5 +168,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(tableName, Payment.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(payment.getId())});
         db.close();
+    }
+
+    public List<Payment> searchPaymentByName(String substring) {
+        // get readable database as we are not inserting anything
+        List<Payment> payments = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM "+tableName+
+                " WHERE "+Payment.COLUMN_NAME+" LIKE '%"+ substring +"%'"
+                + " ORDER BY " + Payment.COLUMN_TIMESTAMP + " ASC", null);
+
+        // looping through all rows and adding to list
+        if (cursor!=null && cursor.moveToFirst()) {
+            do {
+                Payment payment = new Payment();
+                payment.setId(cursor.getInt(cursor.getColumnIndex(Payment.COLUMN_ID)));
+                payment.setName(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_NAME)));
+                payment.setPrice(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_PRICE)));
+                payment.setDetails(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_DETAILS)));
+                payment.setTimestamp(cursor.getString(cursor.getColumnIndex(Payment.COLUMN_TIMESTAMP)));
+
+                payments.add(payment);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return payments;
     }
 }

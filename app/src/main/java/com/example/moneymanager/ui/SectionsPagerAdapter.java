@@ -33,26 +33,27 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2, R.string.tab_text_3};
     private final Context mContext;
-    private final FloatingActionButton addFab;
+    private final FloatingActionButton addFab, searchFab;
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm, FloatingActionButton addFab) {
+    public SectionsPagerAdapter(Context context, FragmentManager fm, FloatingActionButton addFab, FloatingActionButton searchFab) {
         super(fm);
         mContext = context;
         this.addFab = addFab;
+        this.searchFab = searchFab;
     }
 
     @NotNull
     @Override
     public Fragment getItem(int position) {
         if(position==0) {
-            fragmentOne = new FragmentOne(mContext, addFab);
+            fragmentOne = new FragmentOne(mContext, addFab, searchFab);
             return fragmentOne;
         }
         if(position==1) {
-            fragmentTwo = new FragmentTwo(mContext, addFab);
+            fragmentTwo = new FragmentTwo(mContext, addFab, searchFab);
             return fragmentTwo;
         }
-        fragmentThree = new FragmentThree(mContext, addFab);
+        fragmentThree = new FragmentThree(mContext, addFab, searchFab);
         return fragmentThree;
     }
 

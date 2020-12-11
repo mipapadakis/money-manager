@@ -1,5 +1,12 @@
 package com.example.moneymanager.database.model;
 
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Payment {
     public static final String TABLE_ONE_NAME = "expenses";
     public static final String TABLE_TWO_NAME = "i_owe";
@@ -57,6 +64,17 @@ public class Payment {
 
     public String getTimestamp() { return timestamp; }
     public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+
+    public String getFormattedTimestamp() {
+        try {
+            SimpleDateFormat fmt = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a", Locale.getDefault());
+            Date date = fmt.parse(timestamp);
+            fmt.applyPattern("MMM d,  h:mm a");
+            if(date==null){ return ""; }
+            return fmt.format(date);
+        } catch (ParseException e) { Log.d("Error @PaymentAdapter", e.getMessage()); }
+        return timestamp;
+    }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

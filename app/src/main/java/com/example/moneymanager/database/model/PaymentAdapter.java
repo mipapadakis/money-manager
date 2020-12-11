@@ -44,22 +44,11 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.viewHold
             holder.details.setVisibility(View.VISIBLE);
         }
         holder.dot.setText(Html.fromHtml("&#8226;")); // Displaying dot from HTML character code
-        holder.timestamp.setText(getFormattedDate(payment.getTimestamp())); // Formatting and displaying timestamp
+        holder.timestamp.setText(payment.getFormattedTimestamp()); // Formatting and displaying timestamp
     }
 
     @Override
     public int getItemCount() { return paymentsList.size(); }
-
-    private String getFormattedDate(String dateStr) {
-        try {
-            SimpleDateFormat fmt = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a", Locale.getDefault());
-            Date date = fmt.parse(dateStr);
-            fmt.applyPattern("MMM d,  h:mm a");
-            if(date==null){ return ""; }
-            return fmt.format(date);
-        } catch (ParseException e) { Log.d("Error @PaymentAdapter", e.getMessage()); }
-        return "";
-    }
 
     public class viewHolder extends RecyclerView.ViewHolder {
         public TextView dot;

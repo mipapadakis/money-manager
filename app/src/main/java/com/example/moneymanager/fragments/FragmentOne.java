@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,29 +32,31 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class FragmentOne extends Fragment {
     private static final float LOW_ALPHA = 0.06F;
     private static final float FULL_ALPHA = 1.0F;
     private static final int type = DatabaseHelper.TYPE_ONE; //TODO •
     private final List<Payment> paymentsList = new ArrayList<>();
-    private final FloatingActionButton addFab;
+    private final FloatingActionButton addFab, searchFab;
     private TextView fragmentDescriptionTV;
+    private EditText searchEditText;
     private String fragmentDescriptionString;
     private PaymentAdapter adapter;
     private final Context context;
     private DatabaseHelper db;
 
-    public FragmentOne(Context mContext, FloatingActionButton addFab) {
+    public FragmentOne(Context mContext, FloatingActionButton addFab, FloatingActionButton searchFab) {
         context = mContext;
         this.addFab = addFab;
+        this.searchFab = searchFab;
     } //TODO •
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
+        searchEditText = view.findViewById(R.id.search_edit_text);
         fragmentDescriptionString = getResources().getText(R.string.fragment_one_description).toString(); // TODO •
 
         db = new DatabaseHelper(context, type);
@@ -92,8 +92,11 @@ public class FragmentOne extends Fragment {
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     addFab.animate().alpha(LOW_ALPHA);
                     addFab.setAlpha(LOW_ALPHA);
+                    searchFab.animate().alpha(LOW_ALPHA);
+                    searchFab.setAlpha(LOW_ALPHA);
                 } else { // if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING)
                     addFab.animate().alpha(FULL_ALPHA);
+                    searchFab.animate().alpha(FULL_ALPHA);
                 }
             }
         });
@@ -256,8 +259,16 @@ public class FragmentOne extends Fragment {
         });
     }
 
-    public void setFabClickListener(){
+    public void setAddFabClickListener(){
         showPaymentDialog(false, null, -1);
+    }
+
+    public void setSearchFabClickListener(){
+        if(searchEditText.getVisibility()==View.GONE) {
+            searchEditText.setVisibility(View.VISIBLE);
+        }
+        else
+            searchEditText.setVisibility(View.GONE);
     }
 }
 

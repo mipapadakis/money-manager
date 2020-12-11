@@ -2,8 +2,10 @@ package com.example.moneymanager.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,23 +39,26 @@ public class FragmentTwo extends Fragment {
     private static final float LOW_ALPHA = 0.06F;
     private static final float FULL_ALPHA = 1.0F;
     private static final int type = DatabaseHelper.TYPE_TWO; //TODO •
-    private final List<Payment> paymentsList = new ArrayList<>();
-    private final FloatingActionButton addFab;
-    private TextView fragmentDescriptionTV;
-    private String fragmentDescriptionString;
-    private PaymentAdapter adapter;
+    private static final List<Payment> paymentsList = new ArrayList<>();
+    private final FloatingActionButton addFab, searchFab;
+    private static TextView fragmentDescriptionTV;
+    private EditText searchEditText;
+    private static String fragmentDescriptionString;
+    private static PaymentAdapter adapter;
     private final Context context;
-    private DatabaseHelper db;
+    private static DatabaseHelper db;
 
-    public FragmentTwo(Context mContext, FloatingActionButton addFab) {
+    public FragmentTwo(Context mContext, FloatingActionButton addFab, FloatingActionButton searchFab) {
         context = mContext;
         this.addFab = addFab;
+        this.searchFab = searchFab;
     } //TODO •
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
+        searchEditText = view.findViewById(R.id.search_edit_text);
         fragmentDescriptionString = getResources().getText(R.string.fragment_two_description).toString(); // TODO •
 
         db = new DatabaseHelper(context, type);
@@ -86,8 +91,11 @@ public class FragmentTwo extends Fragment {
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     addFab.animate().alpha(LOW_ALPHA);
                     addFab.setAlpha(LOW_ALPHA);
+                    searchFab.animate().alpha(LOW_ALPHA);
+                    searchFab.setAlpha(LOW_ALPHA);
                 } else { // if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING)
                     addFab.animate().alpha(FULL_ALPHA);
+                    searchFab.animate().alpha(FULL_ALPHA);
                 }
             }
         });
@@ -95,7 +103,7 @@ public class FragmentTwo extends Fragment {
         return view;
     }
 
-    private void updateFragmentDescription(){ //TODO •
+    private static void updateFragmentDescription(){ //TODO •
         double total = 0;
         for(int i=0; i<paymentsList.size(); i++){
             total += Double.parseDouble(paymentsList.get(i).getPrice());
@@ -129,7 +137,8 @@ public class FragmentTwo extends Fragment {
      * Updating payment in db and updating
      * item in the list by its position
      */
-    private void updatePayment(String name, String price, String details, int position) {
+    static void updatePayment(String name, String price, String details, int position) {
+        if(position<0) return;
         Payment p = paymentsList.get(position);
         // updating payment text
         p.setName(name);
@@ -149,7 +158,8 @@ public class FragmentTwo extends Fragment {
      * Deleting payment from SQLite and removing the
      * item from the list by its position
      */
-    private void deletePayment(int position) {
+    static void deletePayment(int position) {
+        if(position<0) return;
         // deleting the payment from db
         db.deletePayment(paymentsList.get(position));
 
@@ -159,18 +169,31 @@ public class FragmentTwo extends Fragment {
         updateFragmentDescription();
     }
 
+    static int getPosition(Payment payment){
+        for(int i=0; i<paymentsList.size(); i++){
+            if(paymentsList.get(i).getId() == payment.getId())
+                return i;
+        }
+        return -1;
+    }
+
     /**
      * Opens dialog with Edit - Delete options
      */
     private void showActionsDialog(final int position) {
-        CharSequence[] colors = new CharSequence[]{"Edit", "Delete"};
+        CharSequence[] colors = new CharSequence[]{"Edit", "Merge", "Delete"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Choose option");
         builder.setItems(colors, (dialog, which) -> {
             if (which == 0) {
                 showPaymentDialog(true, paymentsList.get(position), position);
-            } else {
+            }
+            else if (which == 1) {
+                if(!createMergePaymentDialog(paymentsList.get(position)))
+                    Toast.makeText(context, "You've run out of friends! :(", Toast.LENGTH_SHORT).show();
+            }
+            else {
                 deletePayment(position);
             }
         });
@@ -231,18 +254,82 @@ public class FragmentTwo extends Fragment {
                 alertDialog.dismiss();
             }
 
+            Payment p;
             // check if user updating payment
             if (shouldUpdate && payment != null) {
                 // update payment by it's id
                 updatePayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString(), position);
+                p = paymentsList.get(position);
             } else {
                 // create new payment
                 createPayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString());
+                p = paymentsList.get(0);
             }
+            createMergePaymentDialog(p);
         });
     }
 
-    public void setFabClickListener(){
+    private boolean createMergePaymentDialog(Payment paymentToBeMerged){
+        DatabaseHelper dbTypeThree = new DatabaseHelper(context, DatabaseHelper.TYPE_THREE);
+        List<Payment> list = new ArrayList<>(dbTypeThree.searchPaymentByName(paymentToBeMerged.getName()));
+        if(list.isEmpty()) return false;
+
+        CharSequence[] paymentNames = new CharSequence[list.size()];
+        for(int i=0; i<paymentNames.length; i++){
+            paymentNames[i] = list.get(i).getName()+" ("+list.get(i).getPrice()+"€)";
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("The following people also owe you money. Merge?");
+        builder.setItems(paymentNames, (dialog, which) -> {
+            mergePayment(paymentToBeMerged, list.get(which));
+        });
+        builder.setNegativeButton("Nope", (dialogInterface, i) -> {
+                    dialogInterface.cancel();
+                }).show();
+
+        return true;
+    }
+
+    private void mergePayment(Payment paymentFromTwo, Payment paymentFromThree){
+        double p2 = Double.parseDouble(paymentFromTwo.getPrice()), p3 = Double.parseDouble(paymentFromThree.getPrice());
+        double newPrice;
+
+        if(p2>p3){
+            newPrice = p2-p3;
+            // • Delete payment from 3
+            // • Update payment price from 2
+            FragmentThree.deletePayment(FragmentThree.getPosition(paymentFromThree));
+            updatePayment(paymentFromTwo.getName(),
+                    Double.toString(newPrice),
+                    paymentFromTwo.getDetails(),
+                    getPosition(paymentFromThree));
+        }
+        else if(p2<p3){
+            newPrice = p3-p2;
+            // • Delete payment from 2
+            // • Update payment price from 3
+            deletePayment(getPosition(paymentFromTwo));
+            FragmentThree.updatePayment(paymentFromThree.getName(),
+                    Double.toString(newPrice),
+                    paymentFromThree.getDetails(),
+                    FragmentThree.getPosition(paymentFromThree));
+        }
+        else{
+            Toast.makeText(context, "Same amount -> deleted both.", Toast.LENGTH_SHORT).show();
+            deletePayment(getPosition(paymentFromTwo));
+            FragmentThree.deletePayment(FragmentThree.getPosition(paymentFromThree));
+        }
+    }
+
+    public void setAddFabClickListener(){
         showPaymentDialog(false, null, -1);
+    }
+    public void setSearchFabClickListener(){
+        if(searchEditText.getVisibility()==View.GONE) {
+            searchEditText.setVisibility(View.VISIBLE);
+        }
+        else
+            searchEditText.setVisibility(View.GONE);
     }
 }

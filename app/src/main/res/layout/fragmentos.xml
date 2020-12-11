@@ -6,21 +6,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/fragment_description"
+    <RelativeLayout
+        android:id="@+id/fragment_description_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:lineSpacingExtra="8sp"
-        android:text="@string/fragment_description"
-        android:background="@color/dot"
-        android:paddingHorizontal="5dp"
-        android:paddingVertical="2dp"
-        android:textSize="12sp"
-        android:textColor="@color/text"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/fragment_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8sp"
+            android:text="@string/fragment_description"
+            android:background="@color/dot"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="2dp"
+            android:textSize="12sp"
+            android:textColor="@color/text"
+            android:gravity="center_horizontal"/>
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="9dp"
+            android:maxLines="1"
+            android:textSize="18sp"
+            android:hint="@string/search_hint"
+            android:background="@color/white"
+            android:visibility="gone"/>
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -28,8 +47,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_description"
+        app:layout_constraintTop_toBottomOf="@id/fragment_description_layout"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
-        android:paddingBottom="40dp"/>
+        app:layout_constraintVertical_bias="0"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
