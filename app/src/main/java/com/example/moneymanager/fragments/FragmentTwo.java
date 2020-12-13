@@ -4,13 +4,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,11 +46,15 @@ public class FragmentTwo extends Fragment {
     private static final List<Payment> paymentsList = new ArrayList<>();
     private final FloatingActionButton addFab, searchFab;
     private static TextView fragmentDescriptionTV;
-    private EditText searchEditText;
     private static String fragmentDescriptionString;
     private static PaymentAdapter adapter;
     private final Context context;
     private static DatabaseHelper db;
+
+    //Search_bar views
+    private EditText searchEditText;
+    private ImageButton searchCloseIBtn;
+    private boolean inSearchView = false;
 
     public FragmentTwo(Context mContext, FloatingActionButton addFab, FloatingActionButton searchFab) {
         context = mContext;
@@ -59,6 +67,7 @@ public class FragmentTwo extends Fragment {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
         searchEditText = view.findViewById(R.id.search_edit_text);
+        searchCloseIBtn = view.findViewById(R.id.search_close_btn);
         fragmentDescriptionString = getResources().getText(R.string.fragment_two_description).toString(); // TODO •
 
         db = new DatabaseHelper(context, type);
@@ -234,6 +243,9 @@ public class FragmentTwo extends Fragment {
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(false);
 
+        inputName.requestFocus();
+        toggleKeyboard(inputName, true);
+
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             // Show toast message when no name or price is entered
             if(TextUtils.isEmpty(inputName.getText().toString()) && TextUtils.isEmpty(inputPrice.getText().toString())){
@@ -265,6 +277,7 @@ public class FragmentTwo extends Fragment {
                 createPayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString());
                 p = paymentsList.get(0);
             }
+            enableSearchView(false);
             createMergePaymentDialog(p);
         });
     }
@@ -322,14 +335,69 @@ public class FragmentTwo extends Fragment {
         }
     }
 
-    public void setAddFabClickListener(){
-        showPaymentDialog(false, null, -1);
-    }
+    public void setAddFabClickListener(){ showPaymentDialog(false, null, -1); }
+
+
     public void setSearchFabClickListener(){
-        if(searchEditText.getVisibility()==View.GONE) {
-            searchEditText.setVisibility(View.VISIBLE);
+        if(!inSearchView) { //Open Search View
+            enableSearchView(true);
+            setSearchCloseIBtnListener();
+            searchEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence cs, int start, int before, int count) {
+                    ArrayList<Payment> sublist = new ArrayList<Payment>(db.searchPaymentByName(cs.toString()));
+                    paymentsList.clear();
+                    paymentsList.addAll(sublist);
+                    adapter.notifyDataSetChanged();
+                    if(paymentsList.isEmpty())
+                        Toast.makeText(context, "List is empty my friend!", Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
         }
-        else
+    }
+
+    private void setSearchCloseIBtnListener(){
+        searchCloseIBtn.setOnClickListener(view -> {
+            if(inSearchView){
+                paymentsList.clear();
+                paymentsList.addAll(db.getAllPayments());
+                adapter.notifyDataSetChanged();
+                enableSearchView(false);
+            }
+        });
+    }
+
+    private void enableSearchView(boolean show){
+        inSearchView = show;
+        if(show){
+            searchEditText.setVisibility(View.VISIBLE);
+            searchFab.setVisibility(View.GONE);
+            searchCloseIBtn.setVisibility(View.VISIBLE);
+            searchCloseIBtn.bringToFront();
+            fragmentDescriptionTV.setVisibility(View.INVISIBLE);
+            toggleKeyboard(searchEditText, true);
+            searchEditText.requestFocus();
+        }
+        else{
+            searchEditText.setText("");
             searchEditText.setVisibility(View.GONE);
+            searchCloseIBtn.setVisibility(View.GONE);
+            fragmentDescriptionTV.setVisibility(View.VISIBLE);
+            toggleKeyboard(searchEditText, false);
+            searchFab.setAlpha(0F);
+            searchFab.setVisibility(View.VISIBLE);
+            searchFab.animate().alpha(FULL_ALPHA);
+            updateFragmentDescription();
+        }
+    }
+
+    private void toggleKeyboard(View view, boolean show){
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(show) imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+        else imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 }
