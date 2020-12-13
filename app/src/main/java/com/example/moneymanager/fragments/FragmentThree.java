@@ -39,7 +39,7 @@ public class FragmentThree extends Fragment {
     private static final int type = DatabaseHelper.TYPE_THREE; //TODO •
     private static final List<Payment> paymentsList = new ArrayList<>();
     private final FloatingActionButton addFab, searchFab;
-    private static TextView fragmentDescriptionTV;
+    private TextView fragmentDescriptionTV;
     private static String fragmentDescriptionString;
     private static PaymentAdapter adapter;
     private final Context context;
@@ -106,7 +106,7 @@ public class FragmentThree extends Fragment {
         return view;
     }
 
-    private static void updateFragmentDescription(){ //TODO •
+    private void updateFragmentDescription(){ //TODO •
         double total = 0;
         for(int i=0; i<paymentsList.size(); i++){
             total += Double.parseDouble(paymentsList.get(i).getPrice());
@@ -154,7 +154,6 @@ public class FragmentThree extends Fragment {
         // refreshing the list
         paymentsList.set(position, p);
         adapter.notifyItemChanged(position);
-        updateFragmentDescription();
     }
 
     /**
@@ -169,7 +168,6 @@ public class FragmentThree extends Fragment {
         // removing the payment from the list
         paymentsList.remove(position);
         adapter.notifyItemRemoved(position);
-        updateFragmentDescription();
     }
 
     static int getPosition(Payment payment){
@@ -198,6 +196,7 @@ public class FragmentThree extends Fragment {
             }
             else {
                 deletePayment(position);
+                updateFragmentDescription();
             }
         });
         builder.show();
@@ -230,8 +229,10 @@ public class FragmentThree extends Fragment {
         alertDialogBuilderUserInput
                 .setCancelable(true)
                 .setPositiveButton(shouldUpdate ? "update" : "save", (dialogBox, id) -> {})
-                .setNegativeButton("cancel",
-                        (dialogBox, id) -> dialogBox.cancel());
+                .setNegativeButton("cancel", (dialogBox, id) -> {
+                    toggleKeyboard(dialogTitle, false);
+                    dialogBox.cancel();
+                });
 
         final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
         alertDialog.show();
@@ -258,6 +259,7 @@ public class FragmentThree extends Fragment {
                 inputName.requestFocus();
                 return;
             } else {
+                toggleKeyboard(dialogTitle, false);
                 alertDialog.dismiss();
             }
 
@@ -274,6 +276,10 @@ public class FragmentThree extends Fragment {
             }
             enableSearchView(false);
             createMergePaymentDialog(p);
+        });
+
+        alertDialog.setOnCancelListener(dialogInterface -> {
+            toggleKeyboard(fragmentDescriptionTV, false);
         });
     }
 
@@ -295,6 +301,7 @@ public class FragmentThree extends Fragment {
         builder.setNegativeButton("Nope", (dialogInterface, i) -> {
             dialogInterface.cancel();
         }).show();
+        enableSearchView(false);
         return true;
     }
 

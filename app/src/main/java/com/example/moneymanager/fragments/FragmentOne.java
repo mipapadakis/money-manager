@@ -2,6 +2,7 @@ package com.example.moneymanager.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -169,7 +170,6 @@ public class FragmentOne extends Fragment {
         // refreshing the list
         paymentsList.set(position, p);
         adapter.notifyItemChanged(position);
-        updateFragmentDescription();
     }
 
     /**
@@ -183,7 +183,6 @@ public class FragmentOne extends Fragment {
         // removing the payment from the list
         paymentsList.remove(position);
         adapter.notifyItemRemoved(position);
-        updateFragmentDescription();
     }
 
     /**
@@ -199,6 +198,7 @@ public class FragmentOne extends Fragment {
                 showPaymentDialog(true, paymentsList.get(position), position);
             } else {
                 deletePayment(position);
+                updateFragmentDescription();
             }
         });
         builder.show();
@@ -231,9 +231,10 @@ public class FragmentOne extends Fragment {
         alertDialogBuilderUserInput
                 .setCancelable(true)
                 .setPositiveButton(shouldUpdate ? "update" : "save", (dialogBox, id) -> {})
-                .setNegativeButton("cancel",
-                        (dialogBox, id) -> dialogBox.cancel());
-
+                .setNegativeButton("cancel", (dialogBox, id) -> {
+                    toggleKeyboard(dialogTitle, false);
+                    dialogBox.cancel();
+                });
         final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(false);
@@ -258,6 +259,7 @@ public class FragmentOne extends Fragment {
                 inputName.requestFocus();
                 return;
             } else {
+                toggleKeyboard(dialogTitle, false);
                 alertDialog.dismiss();
             }
 
@@ -270,6 +272,10 @@ public class FragmentOne extends Fragment {
                 createPayment(inputName.getText().toString(), inputPrice.getText().toString(), inputDetails.getText().toString());
             }
             enableSearchView(false);
+        });
+
+        alertDialog.setOnCancelListener(dialogInterface -> {
+            toggleKeyboard(fragmentDescriptionTV, false);
         });
     }
 

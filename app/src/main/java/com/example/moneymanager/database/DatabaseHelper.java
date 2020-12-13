@@ -18,14 +18,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final int TYPE_ONE = 1;
     public static final int TYPE_TWO = 2;
     public static final int TYPE_THREE = 3;
-    private int type;
-    private String tableName;
+    private final int type;
+    private final String tableName;
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
     private static final String DATABASE_NAME = "money_manager_db";
+    private static final String ORDER = " DESC"; // " ASC"
 
     public DatabaseHelper(Context context, int type) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,7 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
 
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + tableName + " ORDER BY " + Payment.COLUMN_TIMESTAMP + " ASC";
+        String selectQuery = "SELECT  * FROM " + tableName + " ORDER BY " + Payment.COLUMN_ID + ORDER;
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -177,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery("SELECT * FROM "+tableName+
                 " WHERE "+Payment.COLUMN_NAME+" LIKE '%"+ substring +"%'"
-                + " ORDER BY " + Payment.COLUMN_TIMESTAMP + " ASC", null);
+                + " ORDER BY " + Payment.COLUMN_ID + ORDER, null);
 
         // looping through all rows and adding to list
         if (cursor!=null && cursor.moveToFirst()) {

@@ -52,6 +52,8 @@
                 android:paddingVertical="9dp"
                 android:textSize="18sp"
                 app:layout_constrainedWidth="true"
+                android:drawableLeft="@drawable/baseline_search_24"
+                android:drawableStart="@drawable/baseline_search_24"
                 app:layout_constraintEnd_toStartOf="@+id/search_close_btn"
                 app:layout_constraintRight_toLeftOf="@+id/search_close_btn"
                 app:layout_constraintLeft_toLeftOf="parent"
