@@ -42,7 +42,7 @@ import java.util.Locale;
 public class FragmentTwo extends Fragment {
     private static final float LOW_ALPHA = 0.06F;
     private static final float FULL_ALPHA = 1.0F;
-    private static final int type = DatabaseHelper.TYPE_TWO; //TODO •
+    private static final int type = DatabaseHelper.TYPE_TWO;
     private static final List<Payment> paymentsList = new ArrayList<>();
     private final FloatingActionButton addFab, searchFab;
     private TextView fragmentDescriptionTV;
@@ -60,22 +60,20 @@ public class FragmentTwo extends Fragment {
         context = mContext;
         this.addFab = addFab;
         this.searchFab = searchFab;
-    } //TODO •
+    }
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
+        db = new DatabaseHelper(context, type);
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
         searchEditText = view.findViewById(R.id.search_edit_text);
         searchCloseIBtn = view.findViewById(R.id.search_close_btn);
-        fragmentDescriptionString = getResources().getText(R.string.fragment_two_description).toString(); // TODO •
-
-        db = new DatabaseHelper(context, type);
-        db.getWritableDatabase().close();
-        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments());
-        updateFragmentDescription();
+        fragmentDescriptionString = getResources().getText(R.string.fragment_two_description).toString();
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments());
+        updateFragmentDescription();
         adapter = new PaymentAdapter(paymentsList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
@@ -112,7 +110,7 @@ public class FragmentTwo extends Fragment {
         return view;
     }
 
-    private void updateFragmentDescription(){ //TODO •
+    private void updateFragmentDescription(){
         double total = 0;
         for(int i=0; i<paymentsList.size(); i++){
             total += Double.parseDouble(paymentsList.get(i).getPrice());
@@ -198,7 +196,7 @@ public class FragmentTwo extends Fragment {
             }
             else if (which == 1) {
                 if(!createMergePaymentDialog(paymentsList.get(position)))
-                    Toast.makeText(context, "You've run out of friends! :(", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "No friends with similar name! :(", Toast.LENGTH_SHORT).show(); //"You've run out of friends! :("
             }
             else {
                 deletePayment(position);
@@ -225,7 +223,7 @@ public class FragmentTwo extends Fragment {
         final EditText inputPrice = view.findViewById(R.id.dialog_price_edit_text);
         final EditText inputDetails = view.findViewById(R.id.dialog_details_edit_text);
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_two_new_payment) : getString(R.string.update_payment)); //TODO •
+        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_two_new_payment) : getString(R.string.update_payment));
 
         if (shouldUpdate && payment != null) {
             inputName.setText(payment.getName());
@@ -250,7 +248,7 @@ public class FragmentTwo extends Fragment {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             // Show toast message when no name or price is entered
             if(TextUtils.isEmpty(inputName.getText().toString()) && TextUtils.isEmpty(inputPrice.getText().toString())){
-                Toast.makeText(context, "Please enter a name and price!", Toast.LENGTH_SHORT).show(); //TODO •
+                Toast.makeText(context, "Please enter a name and price!", Toast.LENGTH_SHORT).show();
                 inputName.requestFocus();
                 return;
             }
@@ -260,7 +258,7 @@ public class FragmentTwo extends Fragment {
                 return;
             }
             if (TextUtils.isEmpty(inputName.getText().toString())) {
-                Toast.makeText(context, "Please enter a name!", Toast.LENGTH_SHORT).show(); //TODO •
+                Toast.makeText(context, "Please enter a name!", Toast.LENGTH_SHORT).show();
                 inputName.requestFocus();
                 return;
             } else {

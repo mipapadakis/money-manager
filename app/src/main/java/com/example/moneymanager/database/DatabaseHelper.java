@@ -40,9 +40,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // create table
-        if(type == TYPE_ONE) db.execSQL(Payment.CREATE_TABLE_ONE);
-        else if(type == TYPE_TWO) db.execSQL(Payment.CREATE_TABLE_TWO);
-        else db.execSQL(Payment.CREATE_TABLE_THREE);
+        db.execSQL(Payment.CREATE_TABLE_ONE);
+        db.execSQL(Payment.CREATE_TABLE_TWO);
+        db.execSQL(Payment.CREATE_TABLE_THREE);
     }
 
     // Upgrading database

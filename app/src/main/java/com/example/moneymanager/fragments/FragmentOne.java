@@ -42,7 +42,7 @@ import java.util.Locale;
 public class FragmentOne extends Fragment {
     private static final float LOW_ALPHA = 0.06F;
     private static final float FULL_ALPHA = 1.0F;
-    private static final int type = DatabaseHelper.TYPE_ONE; //TODO •
+    private static final int type = DatabaseHelper.TYPE_ONE;
     private final List<Payment> paymentsList = new ArrayList<>();
     private final FloatingActionButton addFab, searchFab;
     private TextView fragmentDescriptionTV;
@@ -60,22 +60,22 @@ public class FragmentOne extends Fragment {
         context = mContext;
         this.addFab = addFab;
         this.searchFab = searchFab;
-    } //TODO •
+    }
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmentos, container, false);
+        db = new DatabaseHelper(context, type);
+        db.getWritableDatabase(); //Calls onCreate in case the db is being created for the first time.
         fragmentDescriptionTV = view.findViewById(R.id.fragment_description);
         searchEditText = view.findViewById(R.id.search_edit_text);
         searchCloseIBtn = view.findViewById(R.id.search_close_btn);
-        fragmentDescriptionString = getResources().getText(R.string.fragment_one_description).toString(); // TODO •
+        fragmentDescriptionString = getResources().getText(R.string.fragment_one_description).toString();
 
-        db = new DatabaseHelper(context, type);
-        db.getWritableDatabase().close(); //Call onCreate in case the db is being created for the first time
-        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments());
-        updateFragmentDescription();
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        if(paymentsList.isEmpty()) paymentsList.addAll(db.getAllPayments());
+        updateFragmentDescription();
         adapter = new PaymentAdapter(paymentsList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
@@ -115,7 +115,7 @@ public class FragmentOne extends Fragment {
         return view;
     }
 
-    private void updateFragmentDescription(){ //TODO •
+    private void updateFragmentDescription(){
         double total = 0;
         for(int i=0; i<paymentsList.size(); i++){
             try {
@@ -221,7 +221,7 @@ public class FragmentOne extends Fragment {
         final EditText inputPrice = view.findViewById(R.id.dialog_price_edit_text);
         final EditText inputDetails = view.findViewById(R.id.dialog_details_edit_text);
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_one_new_payment) : getString(R.string.update_payment)); //TODO •
+        dialogTitle.setText(!shouldUpdate ? getString(R.string.fragment_one_new_payment) : getString(R.string.update_payment));
 
         if (shouldUpdate && payment != null) {
             inputName.setText(payment.getName());
@@ -245,7 +245,7 @@ public class FragmentOne extends Fragment {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             // Show toast message when no name or price is entered
             if(TextUtils.isEmpty(inputName.getText().toString()) && TextUtils.isEmpty(inputPrice.getText().toString())){
-                Toast.makeText(context, "Please enter a product name and price!", Toast.LENGTH_SHORT).show(); //TODO •
+                Toast.makeText(context, "Please enter a product name and price!", Toast.LENGTH_SHORT).show();
                 inputName.requestFocus();
                 return;
             }
@@ -255,7 +255,7 @@ public class FragmentOne extends Fragment {
                 return;
             }
             if (TextUtils.isEmpty(inputName.getText().toString())) {
-                Toast.makeText(context, "Please enter a product name!", Toast.LENGTH_SHORT).show(); //TODO •
+                Toast.makeText(context, "Please enter a product name!", Toast.LENGTH_SHORT).show();
                 inputName.requestFocus();
                 return;
             } else {
@@ -344,12 +344,3 @@ public class FragmentOne extends Fragment {
         else imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 }
-
-//TODO •
-// • LongClick on tab enables menu {clear list, ??, ...}
-// • Increase tab title font size!
-// • Write sql
-// • 
-// •
-// •
-// •

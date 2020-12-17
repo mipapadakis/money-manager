@@ -2,6 +2,7 @@ package com.example.moneymanager;
 
 import android.os.Bundle;
 
+import com.example.moneymanager.database.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import androidx.viewpager.widget.ViewPager;
