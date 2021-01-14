@@ -48,7 +48,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + tableName);
 
@@ -68,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Payment.COLUMN_TIMESTAMP, DateFormat.getDateTimeInstance().format(new Date()));
 
         // insert row
-        long id = db.insert(tableName, null, values);//TODO
+        long id = db.insert(tableName, null, values);
 
         // close db connection
         db.close();
@@ -106,10 +105,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Payment> payments = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
 
-//        Cursor cursor = db.query(tableName,
-//                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
-//                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
-
         // Select All Query
         String selectQuery = "SELECT  * FROM " + tableName + " ORDER BY " + Payment.COLUMN_ID + ORDER;
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -137,11 +132,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getPaymentsCount() {
         SQLiteDatabase db = this.getReadableDatabase();
-
-//        Cursor cursor = db.query(tableName,
-//                new String[]{Payment.COLUMN_ID, Payment.COLUMN_NAME, Payment.COLUMN_PRICE, Payment.COLUMN_DETAILS, Payment.COLUMN_TYPE, Payment.COLUMN_TIMESTAMP},
-//                Payment.COLUMN_TYPE + "=?", new String[]{type}, null, null, null, null);
-
         Cursor cursor = db.rawQuery("SELECT  * FROM " + tableName, null);
         int count = cursor.getCount();
         cursor.close();
@@ -194,7 +184,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
             cursor.close();
         }
-
         return payments;
     }
 }

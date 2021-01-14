@@ -15,7 +15,6 @@ public class Payment {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_DETAILS = "details";
-    //<COLUMN_TYPE> takes values <DatabaseHelper.TYPE_ONE | DatabaseHelper.TYPE_TWO | DatabaseHelper.TYPE_THREE>.
     public static final String COLUMN_TIMESTAMP = "timestamp";
     private int id;
     private String name;

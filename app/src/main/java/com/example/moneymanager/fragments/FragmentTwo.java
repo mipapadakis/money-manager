@@ -321,7 +321,7 @@ public class FragmentTwo extends Fragment {
             updatePayment(paymentFromTwo.getName(),
                     Double.toString(newPrice),
                     paymentFromTwo.getDetails(),
-                    getPosition(paymentFromThree));
+                    getPosition(paymentFromTwo));
         }
         else if(p2<p3){
             newPrice = p3-p2;
